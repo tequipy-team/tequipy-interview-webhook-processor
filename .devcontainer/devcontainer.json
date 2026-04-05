@@ -1,0 +1,20 @@
+{
+  "name": "webhook-processor",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "./gradlew dependencies --quiet",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vmware.vscode-spring-boot",
+        "redhat.java",
+        "vscjava.vscode-gradle"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "SPRING_PROFILES_ACTIVE": "inmemory"
+  }
+}
