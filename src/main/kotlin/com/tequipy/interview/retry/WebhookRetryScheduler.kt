@@ -15,6 +15,7 @@ class WebhookRetryScheduler(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    // TODO: refactor — extract candidate selection & policy decisions into a policy component
     @Scheduled(fixedDelay = 30_000)
     fun retryFailed() {
         val candidates = webhookEventRepository.findByStateAndAttemptsGreaterThan(

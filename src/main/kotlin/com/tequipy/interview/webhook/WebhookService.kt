@@ -26,6 +26,7 @@ class WebhookService(
         event.state = WebhookState.PROCESSING
         webhookEventRepository.save(event)
 
+        // TODO: refactor — this method is getting large, split parsing/processing/persist
         try {
             val pd = ObjectMapper().readTree(event.payload)
             val externalId = pd.get("order_id")?.asText()
