@@ -39,7 +39,7 @@ class StripeSignatureFilter : OncePerRequestFilter() {
 
         if (signature != expected) {
             log.warn("Invalid Stripe signature for request to ${request.requestURI}")
-            sendUnauthoried(response, "Invalid signature")
+            sendUnauthorized(response, "Invalid signature")
             return
         }
 
@@ -52,7 +52,7 @@ class StripeSignatureFilter : OncePerRequestFilter() {
         return mac.doFinal(data.toByteArray()).joinToString("") { "%02x".format(it) }
     }
 
-    private fun sendUnauthoried(response: HttpServletResponse, message: String) {
+    private fun sendUnauthorized(response: HttpServletResponse, message: String) {
         response.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json"
         response.writer.write("""{"error":"$message"}""")
