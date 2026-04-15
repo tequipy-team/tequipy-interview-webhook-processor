@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 @Component
 class RetryPolicy {
 
-    val maxAttempts = 5
+    val maxAttempts = 10
 
     fun delay(attempt: Int): Long {
         return 1000L * attempt
