@@ -25,6 +25,8 @@ class WebhookService(
     fun processEvent(event: WebhookEvent) {
         event.state = WebhookState.PROCESSING
         webhookEventRepository.save(event)
+        println("DEBUG: processing ${event.eventId}")
+        // webhookEventRepository.flush()  // force persistence — removed after pool tuning
 
         // TODO: refactor — this method is getting large, split parsing/processing/persist
         try {
@@ -39,7 +41,8 @@ class WebhookService(
 
             val details = carrierClient.fetchStatus(externalId)
 
-            orderService.updateStatus(externalId, OrderStatus.valueOf(details.status.uppercase()))
+            // FIXME: valueOf throws IAE for unknown statuses — need a mapping / default
+            orderService.updateStatus(externalId, OrderStatus.valueOf(details.status!!.uppercase()))
 
             eventPublisher.publish(OrderStatusChanged(externalId, details.status))
 
@@ -48,6 +51,7 @@ class WebhookService(
             log.info("Processed webhook ${event.eventId} for order $externalId -> ${details.status}")
 
         } catch (e: Exception) {
+            e.printStackTrace()  // debug
             log.warn("Failed to process webhook ${event.eventId}, will retry: ${e.message}")
             event.attempts += 1
             event.state = if (event.attempts >= retryPolicy.maxAttempts) WebhookState.FAILED else WebhookState.RECEIVED
