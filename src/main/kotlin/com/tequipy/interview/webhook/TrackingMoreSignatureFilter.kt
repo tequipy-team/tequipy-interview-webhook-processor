@@ -5,21 +5,24 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
+import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 @Component
 @Order(2)
-class TrackingMoreSignatureFilter : OncePerRequestFilter() {
+class TrackingMoreSignatureFilter(
+    @Value("\${webhook.trackingmore.secret}") private val secret: String,
+) : OncePerRequestFilter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val secret = "tm_test_xyz789"
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -37,7 +40,7 @@ class TrackingMoreSignatureFilter : OncePerRequestFilter() {
 
         val expected = computeHmac(body, secret)
 
-        if (signature != expected) {
+        if (!MessageDigest.isEqual(expected.toByteArray(Charsets.UTF_8), signature.toByteArray(Charsets.UTF_8))) {
             log.warn("Invalid TrackingMore signature for request to ${request.requestURI}")
             sendUnauthorized(response, "Invalid signature")
             return
