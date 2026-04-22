@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import jakarta.servlet.http.HttpServletResponse
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
@@ -16,10 +17,11 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 @Order(1)
-class StripeSignatureFilter : OncePerRequestFilter() {
+class StripeSignatureFilter(
+    @Value("\${webhook.stripe.secret}") private val secret: String,
+) : OncePerRequestFilter() {
 
     private val log = LoggerFactory.getLogger(javaClass)
-    private val secret = "whsec_test_abc123"
 
     override fun doFilterInternal(
         request: HttpServletRequest,
