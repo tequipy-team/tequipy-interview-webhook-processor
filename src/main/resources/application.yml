@@ -23,3 +23,9 @@ management:
 
 server:
   port: 8080
+
+webhook:
+  stripe:
+    secret: ${STRIPE_WEBHOOK_SECRET}
+  trackingmore:
+    secret: ${TRACKINGMORE_WEBHOOK_SECRET}

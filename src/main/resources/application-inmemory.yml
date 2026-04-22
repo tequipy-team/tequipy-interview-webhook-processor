@@ -19,3 +19,9 @@ spring:
 logging:
   level:
     com.tequipy: DEBUG
+
+webhook:
+  stripe:
+    secret: whsec_test_abc123
+  trackingmore:
+    secret: tm_test_xyz789
