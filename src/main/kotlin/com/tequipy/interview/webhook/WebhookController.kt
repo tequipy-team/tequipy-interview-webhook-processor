@@ -21,7 +21,7 @@ class WebhookController(
         @RequestBody body: String,
         @RequestHeader headers: Map<String, String>,
     ): ResponseEntity<String> {
-        log.info("Received webhook from $provider: $body")
+        log.info("Received webhook from provider=$provider")
 
         val eventId = extractEventId(body)
         val wh = WebhookEvent(provider = provider, eventId = eventId, payload = body)
@@ -40,8 +40,7 @@ class WebhookController(
         return try {
             mapper.readTree(body).get("id")?.asText() ?: ""
         } catch (e: Exception) {
-            // REMOVE BEFORE PROD — temporary debug log
-            log.warn("Could not parse event id from body, using empty: $body")
+            log.warn("Could not parse event id from body, using empty string")
             ""
         }
     }
