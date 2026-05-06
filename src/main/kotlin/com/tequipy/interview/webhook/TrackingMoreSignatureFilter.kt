@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
+import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -37,7 +38,7 @@ class TrackingMoreSignatureFilter : OncePerRequestFilter() {
 
         val expected = computeHmac(body, secret)
 
-        if (signature != expected) {
+        if (!MessageDigest.isEqual(signature.toByteArray(Charsets.UTF_8), expected.toByteArray(Charsets.UTF_8))) {
             log.warn("Invalid TrackingMore signature for request to ${request.requestURI}")
             sendUnauthorized(response, "Invalid signature")
             return
